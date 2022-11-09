@@ -1,7 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import GoogleSignOut from "./components/GoogleSignOut";
 import GoogleSignIn from "./components/GoogleSignIn";
 import useSWR from "swr";
@@ -71,7 +71,7 @@ export default function Home(props: { data: any }) {
     }
   }, [accessToken, spotifyToken]);
 
-  const searchArtists = async (e: HTMLFormEvent) => {
+  const searchArtists = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const { data } = await axios.get("https://api.spotify.com/v1/search", {
       headers: {
