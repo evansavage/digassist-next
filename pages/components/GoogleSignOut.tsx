@@ -1,8 +1,8 @@
 import React from "react";
-import { googleLogout } from "@react-oauth/google";
+import { googleLogout, GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function GoogleSignOut(props: any) {
-  const { setAccessToken } = props;
+  const { clientID, setAccessToken } = props;
 
   const logout = () => {
     googleLogout();
@@ -10,5 +10,9 @@ export default function GoogleSignOut(props: any) {
     localStorage.setItem("accessToken", "");
   };
 
-  return <button onClick={() => logout()}>Logout of Google</button>;
+  return (
+    <GoogleOAuthProvider clientId={clientID}>
+      <button onClick={() => logout()}>Logout of Google</button>
+    </GoogleOAuthProvider>
+  );
 }

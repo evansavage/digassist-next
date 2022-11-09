@@ -1,6 +1,6 @@
 import React from "react";
 // import GoogleLogin from "react-google-login";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 const GoogleSignIn = (props: any) => {
   const { clientID, accessToken, setAccessToken, scopes } = props;
@@ -13,7 +13,11 @@ const GoogleSignIn = (props: any) => {
     scope:
       "profile email https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.channel-memberships.creator https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtubepartner-channel-audit",
   });
-  return <button onClick={() => login()}>Login to Google</button>;
+  return (
+    <GoogleOAuthProvider clientId={clientID}>
+      <button onClick={() => login()}>Login to Google</button>
+    </GoogleOAuthProvider>
+  );
 };
 
 export default GoogleSignIn;
