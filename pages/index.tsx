@@ -122,7 +122,7 @@ export default function Home(props: { data: any }) {
   }, [artists]);
 
   return (
-    <GoogleOAuthProvider clientId={clientID}>
+    <>
       <div className="App">
         <header className="App-header">
           <div
@@ -135,20 +135,22 @@ export default function Home(props: { data: any }) {
           >
             <p>DigAssist</p>
             <div>
-              {accessToken !== "" ? (
-                <GoogleSignOut
-                  clientID={clientID}
-                  accessToken={accessToken}
-                  setAccessToken={setAccessToken}
-                  scopes={googleScopes}
-                />
-              ) : (
-                <GoogleSignIn
-                  scopes={googleScopes}
-                  clientID={clientID}
-                  setAccessToken={setAccessToken}
-                />
-              )}
+              <GoogleOAuthProvider clientId={clientID}>
+                {accessToken !== "" ? (
+                  <GoogleSignOut
+                    clientID={clientID}
+                    accessToken={accessToken}
+                    setAccessToken={setAccessToken}
+                    scopes={googleScopes}
+                  />
+                ) : (
+                  <GoogleSignIn
+                    scopes={googleScopes}
+                    clientID={clientID}
+                    setAccessToken={setAccessToken}
+                  />
+                )}
+              </GoogleOAuthProvider>
               {spotifyToken !== null ? (
                 <SpotifySignOut
                   spotifyToken={spotifyToken}
@@ -216,7 +218,7 @@ export default function Home(props: { data: any }) {
           })}
         </div>
       </div>
-    </GoogleOAuthProvider>
+    </>
   );
 }
 
