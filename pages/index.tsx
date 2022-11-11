@@ -7,9 +7,12 @@ import GoogleSignIn from "./components/GoogleSignIn";
 import useSWR from "swr";
 import SpotifySignIn from "./components/SpotifySignIn";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SpotifySignOut from "./components/SpotifySignOut";
+import AccessDenied from "./components/AccessDenied";
+import { ExecOptionsWithStringEncoding } from "child_process";
 
 const SPOTIFY_CLIENT_ID = "e7d2ff66c7054a389f0c5c65db30bf46";
 const REDIRECT_URI = "http://localhost:3000";
@@ -44,8 +47,19 @@ const getVideos = async (token: string) => {
   console.log(response?.data.items);
 };
 
+const GoogleAuthWrapper = ({
+  clientID,
+  children,
+}: {
+  clientID: string;
+  children: any;
+}) => {
+  return (
+    <GoogleOAuthProvider clientId={clientID}>{children}</GoogleOAuthProvider>
+  );
+};
+
 export default function Home(props: { data: any }) {
-  const { data } = props;
   // console.log(data);
   const [accessToken, setAccessToken] = useState<any>("");
   const [spotifyToken, setSpotifyToken] = useState<any>(null);
@@ -53,6 +67,7 @@ export default function Home(props: { data: any }) {
   const [artists, setArtists] = useState([]);
   const [discogsArtists, setDiscogsArtists] = useState([]);
   const [queryType, setQueryType] = useState("artist");
+  const { data: session, status } = useSession();
 
   const spotifyTest = () => {
     console.log("Bruh");
@@ -61,6 +76,7 @@ export default function Home(props: { data: any }) {
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
     setSpotifyToken(localStorage.getItem("spotifyToken"));
+    console.log(session);
   }, []);
 
   useEffect(() => {
@@ -121,6 +137,10 @@ export default function Home(props: { data: any }) {
     console.log(artists);
   }, [artists]);
 
+  if (status !== "authenticated") {
+    return <AccessDenied />;
+  }
+
   return (
     <>
       <div className="App">
@@ -135,7 +155,7 @@ export default function Home(props: { data: any }) {
           >
             <p>DigAssist</p>
             <div>
-              <GoogleOAuthProvider clientId={clientID}>
+              <GoogleAuthWrapper clientID={clientID}>
                 {accessToken !== "" ? (
                   <GoogleSignOut
                     clientID={clientID}
@@ -150,7 +170,7 @@ export default function Home(props: { data: any }) {
                     setAccessToken={setAccessToken}
                   />
                 )}
-              </GoogleOAuthProvider>
+              </GoogleAuthWrapper>
               {spotifyToken !== null ? (
                 <SpotifySignOut
                   spotifyToken={spotifyToken}
@@ -178,7 +198,6 @@ export default function Home(props: { data: any }) {
         </select>
         <button type={"submit"}>Search</button>
       </form>
-      {queryType}
 
       <div style={{ display: "flex" }}>
         <div>
