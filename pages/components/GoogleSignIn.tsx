@@ -13,11 +13,7 @@ const GoogleSignIn = (props: any) => {
     scope:
       "profile email https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.channel-memberships.creator https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtubepartner-channel-audit",
   });
-  return (
-    <GoogleOAuthProvider clientId={clientID}>
-      <button onClick={() => login()}>Login to Google</button>
-    </GoogleOAuthProvider>
-  );
+  return <button onClick={() => login()}>Login to Google</button>;
 };
 
 export default GoogleSignIn;
