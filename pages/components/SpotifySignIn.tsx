@@ -8,10 +8,11 @@ const RESPONSE_TYPE = "token";
 interface SignIn {
   spotifyToken: string;
   setSpotifyToken: Function;
+  redirectURI: string;
 }
 
 const SpotifySignIn = (props: SignIn) => {
-  const { spotifyToken, setSpotifyToken } = props;
+  const { spotifyToken, setSpotifyToken, redirectURI } = props;
 
   useEffect(() => {
     const hash: any = window.location.hash;
@@ -33,7 +34,7 @@ const SpotifySignIn = (props: SignIn) => {
 
   return (
     <a
-      href={`${AUTH_ENDPOINT}?client_id=${SPOTIFY_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
+      href={`${AUTH_ENDPOINT}?client_id=${SPOTIFY_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=${RESPONSE_TYPE}`}
     >
       Login to Spotify
     </a>

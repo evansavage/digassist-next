@@ -59,8 +59,7 @@ const GoogleAuthWrapper = ({
   );
 };
 
-export default function Home(props: { data: any }) {
-  // console.log(data);
+export default function Home(props: any) {
   const [accessToken, setAccessToken] = useState<any>("");
   const [spotifyToken, setSpotifyToken] = useState<any>(null);
   const [searchKey, setSearchKey] = useState("");
@@ -172,6 +171,7 @@ export default function Home(props: { data: any }) {
                 <SpotifySignIn
                   spotifyToken={spotifyToken}
                   setSpotifyToken={setSpotifyToken}
+                  redirectURI={props.SPOTIFY_REDIRECT}
                 />
               )}
             </div>
@@ -234,27 +234,7 @@ export default function Home(props: { data: any }) {
 }
 
 export async function getStaticProps() {
-  const test = () => {
-    console.log("bruh");
-  };
-
-  const auth: any = await axios
-    .get("https://api.discogs.com/database/search", {
-      params: {
-        q: "Nirvana",
-        token: discogsToken,
-        type: "release",
-      },
-    })
-    .catch((err) => console.log(err));
-
-  const releaseInfo = await axios
-    .get(`https://api.discogs.com/masters/${auth.data.results[0].master_id}`)
-    .catch((err) => console.log(err));
-
-  // console.log(releaseInfo);
-
   return {
-    props: { data: auth?.data },
+    props: { SPOTIFY_REDIRECT: process.env.REDIRECT_URI },
   };
 }
