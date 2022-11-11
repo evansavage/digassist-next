@@ -1,11 +1,14 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const clientID =
+  "170771151462-8im6g61eldsjhl4f1qbv5bf70gg5q76e.apps.googleusercontent.com";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider session={pageProps.session}>
+    <GoogleOAuthProvider clientId={clientID}>
       <Component {...pageProps} />
-    </SessionProvider>
+    </GoogleOAuthProvider>
   );
 }

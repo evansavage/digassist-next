@@ -67,7 +67,6 @@ export default function Home(props: { data: any }) {
   const [artists, setArtists] = useState([]);
   const [discogsArtists, setDiscogsArtists] = useState([]);
   const [queryType, setQueryType] = useState("artist");
-  const { data: session, status } = useSession();
 
   const spotifyTest = () => {
     console.log("Bruh");
@@ -76,7 +75,6 @@ export default function Home(props: { data: any }) {
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
     setSpotifyToken(localStorage.getItem("spotifyToken"));
-    console.log(session);
   }, []);
 
   useEffect(() => {
@@ -137,10 +135,6 @@ export default function Home(props: { data: any }) {
     console.log(artists);
   }, [artists]);
 
-  if (status !== "authenticated") {
-    return <AccessDenied />;
-  }
-
   return (
     <>
       <div className="App">
@@ -155,22 +149,20 @@ export default function Home(props: { data: any }) {
           >
             <p>DigAssist</p>
             <div>
-              <GoogleAuthWrapper clientID={clientID}>
-                {accessToken !== "" ? (
-                  <GoogleSignOut
-                    clientID={clientID}
-                    accessToken={accessToken}
-                    setAccessToken={setAccessToken}
-                    scopes={googleScopes}
-                  />
-                ) : (
-                  <GoogleSignIn
-                    scopes={googleScopes}
-                    clientID={clientID}
-                    setAccessToken={setAccessToken}
-                  />
-                )}
-              </GoogleAuthWrapper>
+              {accessToken !== "" ? (
+                <GoogleSignOut
+                  clientID={clientID}
+                  accessToken={accessToken}
+                  setAccessToken={setAccessToken}
+                  scopes={googleScopes}
+                />
+              ) : (
+                <GoogleSignIn
+                  scopes={googleScopes}
+                  clientID={clientID}
+                  setAccessToken={setAccessToken}
+                />
+              )}
               {spotifyToken !== null ? (
                 <SpotifySignOut
                   spotifyToken={spotifyToken}
