@@ -104,7 +104,7 @@ export default function Home(props: any) {
     setDiscogsArtists(discogsData?.data?.results);
     if (queryType === "release") {
       setArtists(
-        data.albums.items.map((data, index) => {
+        data.albums.items.map((data: any, index: number) => {
           return {
             id: index.toString(),
             position: { x: 0, y: index * 50 },
@@ -120,7 +120,7 @@ export default function Home(props: any) {
       );
     } else if (queryType === "artist") {
       setArtists(
-        data.artists.items.map((data, index) => {
+        data.artists.items.map((data: any, index: number) => {
           return {
             id: index.toString(),
             position: { x: 0, y: index * 50 },
@@ -136,7 +136,7 @@ export default function Home(props: any) {
       );
     } else {
       setArtists(
-        data.albums.items.map((data, index) => {
+        data.albums.items.map((data: any, index: number) => {
           return {
             id: index.toString(),
             position: { x: 0, y: index * 50 },
