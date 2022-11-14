@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 import axios from "axios";
+import { ReactFlowProvider } from "reactflow";
 
 const handleStyle = { left: 20 };
 
@@ -86,7 +87,7 @@ function CustomNode({ data }: any) {
   }, [data]);
 
   return (
-    <>
+    <ReactFlowProvider>
       <Handle type="target" position={Position.Top} />
       <div
         style={{
@@ -129,7 +130,7 @@ function CustomNode({ data }: any) {
         id="b"
         style={handleStyle}
       />
-    </>
+    </ReactFlowProvider>
   );
 }
 
