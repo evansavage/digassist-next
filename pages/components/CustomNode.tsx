@@ -9,7 +9,6 @@ interface GenreInt {
   nodeData: any;
   genre: string;
   token: string;
-  // flow: any;
 }
 
 const AddNodesGenreButton = ({ nodeData, genre, token }: GenreInt) => {
@@ -68,7 +67,6 @@ function CustomNode({ data }: any) {
     console.log(evt.target.value);
   }, []);
   const [artistData, setArtistData] = useState<any>({});
-  // const flow = useReactFlow();
 
   const getArtistData = async () => {
     const artistData = await axios.get(
@@ -119,7 +117,6 @@ function CustomNode({ data }: any) {
                 nodeData={data}
                 genre={genre}
                 token={data.token}
-                // flow={flow}
               />
             </span>
           ))}
