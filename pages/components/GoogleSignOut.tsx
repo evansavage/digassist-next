@@ -10,9 +10,5 @@ export default function GoogleSignOut(props: any) {
     localStorage.setItem("accessToken", "");
   };
 
-  return (
-    <GoogleOAuthProvider clientId={clientID}>
-      <button onClick={() => logout()}>Logout of Google</button>
-    </GoogleOAuthProvider>
-  );
+  return <button onClick={() => logout()}>Logout of Google</button>;
 }

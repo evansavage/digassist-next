@@ -24,3 +24,14 @@ a {
     background: black;
   }
 }
+
+.react-flow__handle {
+  min-width: 11px;
+  min-height: 11px;
+}
+
+.react-flow__handle-bottom {
+  min-width: 11px;
+  min-height: 11px;
+  bottom: -5px;
+}

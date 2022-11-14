@@ -1,9 +1,9 @@
 import React from "react";
 // import GoogleLogin from "react-google-login";
-import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const GoogleSignIn = (props: any) => {
-  const { clientID, accessToken, setAccessToken, scopes } = props;
+  const { accessToken, setAccessToken, scopes } = props;
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
       console.log(tokenResponse);

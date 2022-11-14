@@ -13,16 +13,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import SpotifySignOut from "./components/SpotifySignOut";
 import AccessDenied from "./components/AccessDenied";
 import { ExecOptionsWithStringEncoding } from "child_process";
-
-const SPOTIFY_CLIENT_ID = "e7d2ff66c7054a389f0c5c65db30bf46";
-const REDIRECT_URI = "http://localhost:3000";
-const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-const RESPONSE_TYPE = "token";
-
-const clientID =
-  "170771151462-8im6g61eldsjhl4f1qbv5bf70gg5q76e.apps.googleusercontent.com";
-const googleScopes =
-  "profile email https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.channel-memberships.creator https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtubepartner-channel-audit";
+import AuthWrapper from "./components/AuthWrapper";
+import SearchResults from "./components/SearchResults";
 
 export const discogsToken = "JqlUbPXscGqXqAuzphAKIsAUTPsLWNVciqXeiPsF";
 
@@ -45,18 +37,6 @@ const getVideos = async (token: string) => {
     })
     .catch((err) => console.log(err));
   console.log(response?.data.items);
-};
-
-const GoogleAuthWrapper = ({
-  clientID,
-  children,
-}: {
-  clientID: string;
-  children: any;
-}) => {
-  return (
-    <GoogleOAuthProvider clientId={clientID}>{children}</GoogleOAuthProvider>
-  );
 };
 
 export default function Home(props: any) {
@@ -118,15 +98,58 @@ export default function Home(props: any) {
         Authorization: `Bearer ${spotifyToken}`,
       },
     });
-    console.log(discogsData);
+    // console.log(data);
+    // console.log(discogsData);
 
     setDiscogsArtists(discogsData?.data?.results);
     if (queryType === "release") {
-      setArtists(data.albums.items);
+      setArtists(
+        data.albums.items.map((data, index) => {
+          return {
+            id: index.toString(),
+            position: { x: 0, y: index * 50 },
+            type: "CustomNode",
+            data: {
+              label: data.name,
+              ...data,
+              token: spotifyToken,
+              nodeID: index.toString(),
+            },
+          };
+        })
+      );
     } else if (queryType === "artist") {
-      setArtists(data.artists.items);
+      setArtists(
+        data.artists.items.map((data, index) => {
+          return {
+            id: index.toString(),
+            position: { x: 0, y: index * 50 },
+            type: "CustomNode",
+            data: {
+              label: data.name,
+              ...data,
+              token: spotifyToken,
+              nodeID: index.toString(),
+            },
+          };
+        })
+      );
     } else {
-      setArtists(data.albums.items);
+      setArtists(
+        data.albums.items.map((data, index) => {
+          return {
+            id: index.toString(),
+            position: { x: 0, y: index * 50 },
+            type: "CustomNode",
+            data: {
+              label: data.name,
+              ...data,
+              token: spotifyToken,
+              nodeID: index.toString(),
+            },
+          };
+        })
+      );
     }
   };
 
@@ -135,49 +158,16 @@ export default function Home(props: any) {
   }, [artists]);
 
   return (
-    <>
-      <div className="App">
-        <header className="App-header">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "10px 20px",
-            }}
-          >
-            <p>DigAssist</p>
-            <div>
-              {accessToken !== "" ? (
-                <GoogleSignOut
-                  clientID={clientID}
-                  accessToken={accessToken}
-                  setAccessToken={setAccessToken}
-                  scopes={googleScopes}
-                />
-              ) : (
-                <GoogleSignIn
-                  scopes={googleScopes}
-                  clientID={clientID}
-                  setAccessToken={setAccessToken}
-                />
-              )}
-              {spotifyToken !== null ? (
-                <SpotifySignOut
-                  spotifyToken={spotifyToken}
-                  setSpotifyToken={setSpotifyToken}
-                />
-              ) : (
-                <SpotifySignIn
-                  spotifyToken={spotifyToken}
-                  setSpotifyToken={setSpotifyToken}
-                  redirectURI={props.SPOTIFY_REDIRECT}
-                />
-              )}
-            </div>
-          </div>
-        </header>
-      </div>
+    <div className="App">
+      <header className="App-header">
+        <AuthWrapper
+          accessToken={accessToken}
+          setAccessToken={setAccessToken}
+          spotifyToken={spotifyToken}
+          setSpotifyToken={setSpotifyToken}
+          spotifyRedirect={props.SPOTIFY_REDIRECT}
+        />
+      </header>
       <form onSubmit={searchArtists}>
         <input type="text" onChange={(e) => setSearchKey(e.target.value)} />
         <select
@@ -190,46 +180,8 @@ export default function Home(props: any) {
         </select>
         <button type={"submit"}>Search</button>
       </form>
-
-      <div style={{ display: "flex" }}>
-        <div>
-          {artists.map((artist: any) => {
-            return (
-              <div key={artist.id}>
-                {artist.images.length ? (
-                  <Image
-                    width={100}
-                    height={100}
-                    style={{ objectFit: "cover" }}
-                    src={artist.images[0].url}
-                    alt={artist.name + artist.id}
-                  />
-                ) : (
-                  <div style={{ width: 100, height: 100 }}>No Image</div>
-                )}
-                {artist.name}
-              </div>
-            );
-          })}
-        </div>
-        <div>
-          {discogsArtists.map((release: release, index: number) => {
-            return (
-              <div key={index}>
-                <Image
-                  src={release.cover_image}
-                  alt={release.title}
-                  style={{ objectFit: "cover" }}
-                  width={100}
-                  height={100}
-                />
-                {release.title}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
+      <SearchResults artists={artists} discogsArtists={discogsArtists} />
+    </div>
   );
 }
 
