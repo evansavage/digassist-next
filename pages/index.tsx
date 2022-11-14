@@ -112,7 +112,6 @@ export default function Home(props: any) {
             data: {
               label: data.name,
               ...data,
-              token: spotifyToken,
               nodeID: index.toString(),
             },
           };
@@ -128,7 +127,6 @@ export default function Home(props: any) {
             data: {
               label: data.name,
               ...data,
-              token: spotifyToken,
               nodeID: index.toString(),
             },
           };
@@ -144,7 +142,6 @@ export default function Home(props: any) {
             data: {
               label: data.name,
               ...data,
-              token: spotifyToken,
               nodeID: index.toString(),
             },
           };

@@ -37,7 +37,7 @@ const recommend = async (flow: any, connection: any) => {
       `?seed_artists=${srcNode.data.id},${destNode.data.id}`,
     {
       headers: {
-        Authorization: `Bearer ${srcNode.data.token}`,
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
       },
     }
   );

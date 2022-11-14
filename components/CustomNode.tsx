@@ -9,15 +9,14 @@ const handleStyle = { left: 20 };
 interface GenreInt {
   nodeData: any;
   genre: string;
-  token: string;
   flow: any;
 }
 
-const AddNodesGenreButton = ({ nodeData, genre, token, flow }: GenreInt) => {
+const AddNodesGenreButton = ({ nodeData, genre, flow }: GenreInt) => {
   const getGenreArtists = async () => {
     const { data } = await axios.get("https://api.spotify.com/v1/search", {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
       },
       params: {
         q: 'genre:"' + genre + '"',
@@ -39,7 +38,6 @@ const AddNodesGenreButton = ({ nodeData, genre, token, flow }: GenreInt) => {
         data: {
           label: artist.name,
           ...artist,
-          token: token,
           nodeID: (nodesLength + index).toString(),
         },
       });
@@ -75,7 +73,7 @@ function CustomNode({ data }: any) {
       "https://api.spotify.com/v1/artists/" + data.id,
       {
         headers: {
-          Authorization: `Bearer ${data.token}`,
+          Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
         },
       }
     );
@@ -116,12 +114,7 @@ function CustomNode({ data }: any) {
           {artistData?.genres?.map((genre: string, index: number) => (
             <span key={index}>
               {genre}
-              <AddNodesGenreButton
-                nodeData={data}
-                genre={genre}
-                token={data.token}
-                flow={flow}
-              />
+              <AddNodesGenreButton nodeData={data} genre={genre} flow={flow} />
             </span>
           ))}
         </div>
