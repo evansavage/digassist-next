@@ -111,7 +111,7 @@ function CustomNode({ data }: any) {
           height={100}
           style={{ objectFit: "cover" }}
         />
-        <div style={{ marginBottom: 10 }}>{data.label}</div>
+        <div style={{ marginBottom: 10 }}>{data?.label}</div>
         <div>
           {artistData?.genres?.map((genre: string, index: number) => (
             <span key={index}>
