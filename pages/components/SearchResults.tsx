@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Node, Edge, ReactFlowProvider } from "reactflow";
 import Flow from "./Flow";
 
-// import useWindowSize, { WindowSize } from "../helpers/useWindowSize";
+import useWindowSize, { Size } from "../../helpers/useWindowSize";
 
 interface SearchResults {
   artists: Node[];
