@@ -11,6 +11,14 @@ interface SignIn {
   redirectURI: string;
 }
 
+const scopes = [
+  "user-read-currently-playing",
+  "user-read-recently-played",
+  "user-read-playback-state",
+  "user-top-read",
+  "user-modify-playback-state",
+];
+
 const SpotifySignIn = (props: SignIn) => {
   const { spotifyToken, setSpotifyToken, redirectURI } = props;
 
@@ -34,7 +42,9 @@ const SpotifySignIn = (props: SignIn) => {
 
   return (
     <a
-      href={`${AUTH_ENDPOINT}?client_id=${SPOTIFY_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=${RESPONSE_TYPE}`}
+      href={`${AUTH_ENDPOINT}?client_id=${SPOTIFY_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=${RESPONSE_TYPE}&scope=${scopes.join(
+        "%20"
+      )}`}
     >
       Login to Spotify
     </a>

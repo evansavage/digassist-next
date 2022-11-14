@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 import axios from "axios";
 import { ReactFlowProvider, useReactFlow } from "reactflow";
+import { TestContext, FlowContextInterface } from "./Flow";
 
 const handleStyle = { left: 20 };
 
@@ -10,9 +11,10 @@ interface GenreInt {
   nodeData: any;
   genre: string;
   flow: any;
+  context: FlowContextInterface | null;
 }
 
-const AddNodesGenreButton = ({ nodeData, genre, flow }: GenreInt) => {
+const AddNodesGenreButton = ({ nodeData, genre, flow, context }: GenreInt) => {
   const getGenreArtists = async () => {
     const { data } = await axios.get("https://api.spotify.com/v1/search", {
       headers: {
@@ -26,22 +28,28 @@ const AddNodesGenreButton = ({ nodeData, genre, flow }: GenreInt) => {
     });
     console.log(nodeData);
     var nodesLength = flow.getNodes().length;
+    var i = 0;
     data?.artists?.items?.forEach((artist: any, index: number) => {
       var refNode = flow.getNode(nodeData.nodeID);
-      flow.addNodes({
-        id: (nodesLength + index).toString(),
-        position: {
-          x: refNode.position.x,
-          y: parseInt(refNode.position.y) + index * 50,
-        },
-        type: "CustomNode",
-        data: {
-          label: artist.name,
-          ...artist,
-          nodeID: (nodesLength + index).toString(),
-        },
-      });
+      if (!context?.artistSet.has(artist.id)) {
+        context?.artistSet.add(artist.id);
+        flow.addNodes({
+          id: (nodesLength + i).toString(),
+          position: {
+            x: refNode.position.x,
+            y: parseInt(refNode.position.y) + index * 50,
+          },
+          type: "CustomNode",
+          data: {
+            label: artist.name,
+            ...artist,
+            nodeID: (nodesLength + i).toString(),
+          },
+        });
+        i += 1;
+      }
     });
+    context?.setArtistSet(context?.artistSet);
   };
 
   return (
@@ -63,10 +71,9 @@ const AddNodesGenreButton = ({ nodeData, genre, flow }: GenreInt) => {
 };
 
 function CustomNode({ data }: any) {
-  const onChange = useCallback((evt: any) => {
-    console.log(evt.target.value);
-  }, []);
   const [artistData, setArtistData] = useState<any>({});
+
+  const flowContext = useContext(TestContext);
 
   const getArtistData = async () => {
     const artistData = await axios.get(
@@ -114,7 +121,12 @@ function CustomNode({ data }: any) {
           {artistData?.genres?.map((genre: string, index: number) => (
             <span key={index}>
               {genre}
-              <AddNodesGenreButton nodeData={data} genre={genre} flow={flow} />
+              <AddNodesGenreButton
+                nodeData={data}
+                genre={genre}
+                flow={flow}
+                context={flowContext}
+              />
             </span>
           ))}
         </div>
