@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 
-export interface WindowSize {
-  width: number | undefined;
-  height: number | undefined;
-}
+// export interface WindowSize {
+//   width: number | undefined;
+//   height: number | undefined;
+// }
 
-function useWindowSize(): WindowSize {
+function useWindowSize() {
   // Initialize state with undefined width/height so server and client renders match
   // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
-  const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: undefined,
-    height: undefined,
-  });
+  const [windowSize, setWindowSize] =
+    useState <
+    WindowSize >
+    {
+      width: undefined,
+      height: undefined,
+    };
   useEffect(() => {
     // Handler to call on window resize
     function handleResize() {
