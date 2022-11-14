@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Node, Edge, ReactFlowProvider } from "reactflow";
 import Flow from "./Flow";
 
-import useWindowSize from "../helpers/useWindowSize";
+import useWindowSize, { WindowSize } from "../helpers/useWindowSize";
 
 interface SearchResults {
   artists: Node[];
@@ -28,7 +28,7 @@ function SearchResults({ artists, discogsArtists }: SearchResults) {
     },
   ];
 
-  const size = useWindowSize();
+  const size: WindowSize = useWindowSize();
 
   useEffect(() => {
     setNodes(artists);
@@ -38,7 +38,7 @@ function SearchResults({ artists, discogsArtists }: SearchResults) {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
   return (
-    <div style={{ height: size?.height - 90 }}>
+    <div style={{ height: size.height !== undefined ? size.height - 90 : 0 }}>
       <ReactFlowProvider>
         <Flow
           nodes={nodes}
