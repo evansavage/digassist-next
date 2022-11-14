@@ -46,7 +46,7 @@ const recommend = async (flow: any, connection: any) => {
 
 const Flow = ({ nodes, edges, setNodes, setEdges }: any) => {
   // you can access the internal state here
-  // const flow = useReactFlow();
+  const flow = useReactFlow();
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -63,7 +63,7 @@ const Flow = ({ nodes, edges, setNodes, setEdges }: any) => {
   const onConnect = useCallback(
     (connection: Connection) => {
       setEdges((eds: any) => addEdge(connection, eds));
-      // recommend(flow, connection);
+      recommend(flow, connection);
     },
     [setEdges]
   );

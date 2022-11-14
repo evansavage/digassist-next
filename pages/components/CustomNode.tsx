@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 import axios from "axios";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider, useReactFlow } from "reactflow";
 
 const handleStyle = { left: 20 };
 
@@ -10,40 +10,41 @@ interface GenreInt {
   nodeData: any;
   genre: string;
   token: string;
+  flow: any;
 }
 
-const AddNodesGenreButton = ({ nodeData, genre, token }: GenreInt) => {
-  // const getGenreArtists = async () => {
-  //   const { data } = await axios.get("https://api.spotify.com/v1/search", {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //     params: {
-  //       q: 'genre:"' + genre + '"',
-  //       type: "artist",
-  //       limit: 5,
-  //     },
-  //   });
-  //   console.log(nodeData);
-  //   var nodesLength = flow.getNodes().length;
-  //   data?.artists?.items?.forEach((artist: any, index: number) => {
-  //     var refNode = flow.getNode(nodeData.nodeID);
-  //     flow.addNodes({
-  //       id: (nodesLength + index).toString(),
-  //       position: {
-  //         x: refNode.position.x,
-  //         y: parseInt(refNode.position.y) + index * 50,
-  //       },
-  //       type: "CustomNode",
-  //       data: {
-  //         label: artist.name,
-  //         ...artist,
-  //         token: token,
-  //         nodeID: (nodesLength + index).toString(),
-  //       },
-  //     });
-  //   });
-  // };
+const AddNodesGenreButton = ({ nodeData, genre, token, flow }: GenreInt) => {
+  const getGenreArtists = async () => {
+    const { data } = await axios.get("https://api.spotify.com/v1/search", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        q: 'genre:"' + genre + '"',
+        type: "artist",
+        limit: 5,
+      },
+    });
+    console.log(nodeData);
+    var nodesLength = flow.getNodes().length;
+    data?.artists?.items?.forEach((artist: any, index: number) => {
+      var refNode = flow.getNode(nodeData.nodeID);
+      flow.addNodes({
+        id: (nodesLength + index).toString(),
+        position: {
+          x: refNode.position.x,
+          y: parseInt(refNode.position.y) + index * 50,
+        },
+        type: "CustomNode",
+        data: {
+          label: artist.name,
+          ...artist,
+          token: token,
+          nodeID: (nodesLength + index).toString(),
+        },
+      });
+    });
+  };
 
   return (
     <button
@@ -56,7 +57,7 @@ const AddNodesGenreButton = ({ nodeData, genre, token }: GenreInt) => {
         border: "none",
         backgroundColor: "lightblue",
       }}
-      // onClick={() => getGenreArtists()}
+      onClick={() => getGenreArtists()}
     >
       +
     </button>
@@ -68,6 +69,7 @@ function CustomNode({ data }: any) {
     console.log(evt.target.value);
   }, []);
   const [artistData, setArtistData] = useState<any>({});
+  const flow = useReactFlow();
 
   const getArtistData = async () => {
     const artistData = await axios.get(
@@ -87,7 +89,7 @@ function CustomNode({ data }: any) {
   }, [data]);
 
   return (
-    <ReactFlowProvider>
+    <>
       <Handle type="target" position={Position.Top} />
       <div
         style={{
@@ -118,6 +120,7 @@ function CustomNode({ data }: any) {
                 nodeData={data}
                 genre={genre}
                 token={data.token}
+                flow={flow}
               />
             </span>
           ))}
@@ -130,7 +133,7 @@ function CustomNode({ data }: any) {
         id="b"
         style={handleStyle}
       />
-    </ReactFlowProvider>
+    </>
   );
 }
 
