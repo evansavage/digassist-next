@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 import axios from "axios";
-import { useReactFlow } from "reactflow";
 
 const handleStyle = { left: 20 };
 
