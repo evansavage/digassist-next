@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Node, Edge, ReactFlowProvider } from "reactflow";
 import Flow from "./Flow";
 
-import useWindowSize, { WindowSize } from "../helpers/useWindowSize";
+// import useWindowSize, { WindowSize } from "../helpers/useWindowSize";
 
 interface SearchResults {
   artists: Node[];
@@ -13,22 +13,8 @@ interface SearchResults {
 const initialEdges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
 
 function SearchResults({ artists, discogsArtists }: SearchResults) {
-  const initialNodes: Node[] = [
-    {
-      id: "1",
-      data: { label: "Node 1" + Math.random() },
-      type: "CustomNode",
-      position: { x: 5, y: 5 },
-    },
-    {
-      id: "2",
-      data: { label: "Node 2" },
-      type: "CustomNode",
-      position: { x: 5, y: 100 },
-    },
-  ];
-
-  const size: WindowSize = useWindowSize();
+  // const size: WindowSize = useWindowSize();
+  // console.log(size);
 
   useEffect(() => {
     setNodes(artists);
@@ -38,7 +24,7 @@ function SearchResults({ artists, discogsArtists }: SearchResults) {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
   return (
-    <div style={{ height: size.height !== undefined ? size.height - 90 : 0 }}>
+    <div style={{ height: 700 }}>
       <ReactFlowProvider>
         <Flow
           nodes={nodes}
