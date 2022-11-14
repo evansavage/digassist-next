@@ -2,19 +2,19 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import GoogleSignOut from "./components/GoogleSignOut";
-import GoogleSignIn from "./components/GoogleSignIn";
+import GoogleSignOut from "../components/GoogleSignOut";
+import GoogleSignIn from "../components/GoogleSignIn";
 import useSWR from "swr";
-import SpotifySignIn from "./components/SpotifySignIn";
+import SpotifySignIn from "../components/SpotifySignIn";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import SpotifySignOut from "./components/SpotifySignOut";
-import AccessDenied from "./components/AccessDenied";
+import SpotifySignOut from "../components/SpotifySignOut";
+import AccessDenied from "../components/AccessDenied";
 import { ExecOptionsWithStringEncoding } from "child_process";
-import AuthWrapper from "./components/AuthWrapper";
-import SearchResults from "./components/SearchResults";
+import AuthWrapper from "../components/AuthWrapper";
+import SearchResults from "../components/SearchResults";
 
 export const discogsToken = "JqlUbPXscGqXqAuzphAKIsAUTPsLWNVciqXeiPsF";
 
