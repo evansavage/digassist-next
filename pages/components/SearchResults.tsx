@@ -13,8 +13,8 @@ interface SearchResults {
 const initialEdges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
 
 function SearchResults({ artists, discogsArtists }: SearchResults) {
-  // const size: WindowSize = useWindowSize();
-  // console.log(size);
+  const size: Size = useWindowSize();
+  console.log(size);
 
   useEffect(() => {
     setNodes(artists);
@@ -24,7 +24,7 @@ function SearchResults({ artists, discogsArtists }: SearchResults) {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
   return (
-    <div style={{ height: 700 }}>
+    <div style={{ height: size.height !== undefined ? size.height - 90 : 0 }}>
       <ReactFlowProvider>
         <Flow
           nodes={nodes}
