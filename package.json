@@ -24,6 +24,7 @@
     "react-dom": "18.2.0",
     "react-flow": "^1.0.3",
     "react-flow-renderer": "^10.3.17",
+    "react-icons": "^4.6.0",
     "react-simple-oauth2-login": "^0.5.3",
     "reactflow": "^11.2.0",
     "sass": "^1.56.1",
