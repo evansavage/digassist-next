@@ -4,6 +4,7 @@ import { Handle, Position } from "reactflow";
 import axios from "axios";
 import { ReactFlowProvider, useReactFlow } from "reactflow";
 import { TestContext, FlowContextInterface } from "./Flow";
+// import { playArtist } from "../helpers/spotify";
 
 const handleStyle = { left: 20 };
 
@@ -13,6 +14,46 @@ interface GenreInt {
   flow: any;
   context: FlowContextInterface | null;
 }
+
+export const playArtist = async (
+  id: string,
+  context: FlowContextInterface | null
+) => {
+  const players = await axios.get(
+    "https://api.spotify.com/v1/me/player/devices",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  const device = players.data.devices[0].id;
+  console.log(device);
+
+  await axios.put(
+    `https://api.spotify.com/v1/me/player/play?device_id=${device}`,
+    {
+      context_uri: `spotify:artist:${id}`,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  const playerState = await axios.get(`https://api.spotify.com/v1/me/player/`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+    },
+  });
+  console.log(context);
+  console.log(playerState);
+  context?.setCurrentlyPlaying(
+    playerState.data.item.name +
+      " - " +
+      playerState.data.item.artists.map((artist: any) => artist.name).join(", ")
+  );
+};
 
 const AddNodesGenreButton = ({ nodeData, genre, flow, context }: GenreInt) => {
   const getGenreArtists = async () => {
@@ -34,7 +75,7 @@ const AddNodesGenreButton = ({ nodeData, genre, flow, context }: GenreInt) => {
       if (!context?.artistSet.has(artist.id)) {
         context?.artistSet.add(artist.id);
         flow.addNodes({
-          id: (nodesLength + i).toString(),
+          id: artist.id,
           position: {
             x: refNode.position.x,
             y: parseInt(refNode.position.y) + index * 50,
@@ -43,7 +84,7 @@ const AddNodesGenreButton = ({ nodeData, genre, flow, context }: GenreInt) => {
           data: {
             label: artist.name,
             ...artist,
-            nodeID: (nodesLength + i).toString(),
+            nodeID: artist.id,
           },
         });
         i += 1;
@@ -90,7 +131,7 @@ function CustomNode({ data }: any) {
   const flow = useReactFlow();
 
   useEffect(() => {
-    getArtistData();
+    // getArtistData();
   }, [data]);
 
   return (
@@ -117,6 +158,7 @@ function CustomNode({ data }: any) {
           style={{ objectFit: "cover" }}
         />
         <div style={{ marginBottom: 10 }}>{data?.label}</div>
+        <button onClick={() => playArtist(data?.id, flowContext)}>Play</button>
         <div>
           {artistData?.genres?.map((genre: string, index: number) => (
             <span key={index}>

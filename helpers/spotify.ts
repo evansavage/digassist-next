@@ -2,6 +2,7 @@ import axios from "axios";
 import { resolve } from "path";
 import { convertCompilerOptionsFromJson, Set } from "typescript";
 import Flow from "../components/Flow";
+import { FlowContextInterface } from "../components/Flow";
 
 export const discogsToken = "JqlUbPXscGqXqAuzphAKIsAUTPsLWNVciqXeiPsF";
 
@@ -49,13 +50,13 @@ export const searchArtists = async (
       if (!artistSet.has(data.id)) {
         artistSet.add(data.id);
         artists.push({
-          id: (nodesLength + i).toString(),
+          id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
           data: {
             label: data.name,
             ...data,
-            nodeID: (nodesLength + i).toString(),
+            nodeID: data.id,
           },
         });
         i += 1;
@@ -66,13 +67,13 @@ export const searchArtists = async (
       if (!artistSet.has(data.id)) {
         artistSet.add(data.id);
         artists.push({
-          id: (nodesLength + i).toString(),
+          id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
           data: {
             label: data.name,
             ...data,
-            nodeID: (nodesLength + i).toString(),
+            nodeID: data.id,
           },
         });
         i += 1;
@@ -83,13 +84,13 @@ export const searchArtists = async (
       if (!artistSet.has(data.id)) {
         artistSet.add(data.id);
         artists.push({
-          id: (nodesLength + i).toString(),
+          id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
           data: {
             label: data.name,
             ...data,
-            nodeID: (nodesLength + i).toString(),
+            nodeID: data.id,
           },
         });
         i += 1;
@@ -141,7 +142,7 @@ export const getRecentArtists = async (
   await Promise.all(artists).then((res) => {
     res.forEach((obj, index) => {
       resultsArr.push({
-        id: (nodesLength + index).toString(),
+        id: obj.data.id,
         position: {
           x: 0,
           y: index * 50,
@@ -150,7 +151,7 @@ export const getRecentArtists = async (
         data: {
           label: obj.data.name,
           ...obj.data,
-          nodeID: (nodesLength + index).toString(),
+          nodeID: obj.data.id,
         },
       });
     });
@@ -172,4 +173,54 @@ export const recommend = async (flow: any, connection: any) => {
     }
   );
   console.log(data);
+};
+
+export const playArtist = async (
+  id: string,
+  context: FlowContextInterface | null
+) => {
+  const players = await axios.get(
+    "https://api.spotify.com/v1/me/player/devices",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  const device = players.data.devices[0].id;
+  console.log(device);
+
+  await axios
+    .put(
+      `https://api.spotify.com/v1/me/player/play?device_id=${device}`,
+      {
+        context_uri: `spotify:artist:${id}`,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+        },
+      }
+    )
+    .then(() => {
+      setTimeout(async () => {
+        const currentlyPlaying = await axios.get(
+          `https://api.spotify.com/v1/me/player/currently-playing`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+            },
+          }
+        );
+        if (currentlyPlaying.data?.item !== null) {
+          context?.setCurrentlyPlaying(
+            currentlyPlaying.data.item.name +
+              " - " +
+              currentlyPlaying.data.item.artists
+                .map((artist: any) => artist.name)
+                .join(", ")
+          );
+        }
+      }, 2000);
+    });
 };

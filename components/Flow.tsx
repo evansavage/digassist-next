@@ -29,12 +29,18 @@ import { searchArtists, getRecentArtists, recommend } from "../helpers/spotify";
 export interface FlowContextInterface {
   artistSet: Set<string>;
   setArtistSet: Function;
+  currentlyPlaying: string;
+  setCurrentlyPlaying: Function;
 }
 
 export const TestContext = createContext<FlowContextInterface | null>(null);
 
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
+};
+
+const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
+  return <div>{currentlyPlaying}</div>;
 };
 
 const initialEdges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
@@ -49,6 +55,7 @@ const Flow = () => {
   const [queryType, setQueryType] = useState("artist");
   const [nodes, setNodes] = useState<Node[]>(artists);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState("");
 
   useEffect(() => {
     setNodes(artists);
@@ -56,7 +63,11 @@ const Flow = () => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      console.log(changes);
+      changes.forEach((change, index) => {
+        if (change.type === "remove") {
+          artistSet.delete(flow.getNode(change.id)?.data?.id);
+        }
+      });
       setNodes((nds: any) => applyNodeChanges(changes, nds));
     },
     [setNodes]
@@ -79,7 +90,10 @@ const Flow = () => {
   const nodeTypes = useMemo(() => ({ CustomNode: CustomNode }), []);
 
   return (
-    <TestContext.Provider value={{ artistSet, setArtistSet }}>
+    <TestContext.Provider
+      value={{ artistSet, setArtistSet, currentlyPlaying, setCurrentlyPlaying }}
+    >
+      <Player currentlyPlaying={currentlyPlaying} />
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -106,13 +120,12 @@ const Flow = () => {
       </form>
       <button
         onClick={async (e) => {
-          const newArtists = await getRecentArtists(
+          const recentArtists = await getRecentArtists(
             flow,
             artistSet,
             setArtistSet
           );
-          console.log(newArtists);
-          setNodes([...nodes, ...newArtists]);
+          setNodes([...nodes, ...recentArtists]);
         }}
       >
         Get Recent Artists
