@@ -23,24 +23,28 @@ import ReactFlow, {
   ReactFlowProvider,
 } from "reactflow";
 import CustomNode from "./CustomNode";
+import Player from "./Player";
 import axios from "axios";
-import { searchArtists, getRecentArtists, recommend } from "../helpers/spotify";
+import {
+  searchArtists,
+  getRecentArtists,
+  recommend,
+  getDeviceID,
+} from "../helpers/spotify";
 
 export interface FlowContextInterface {
   artistSet: Set<string>;
   setArtistSet: Function;
   currentlyPlaying: string;
   setCurrentlyPlaying: Function;
+  deviceID: string;
+  setDeviceID: Function;
 }
 
 export const TestContext = createContext<FlowContextInterface | null>(null);
 
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
-};
-
-const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
-  return <div>{currentlyPlaying}</div>;
 };
 
 const initialEdges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
@@ -56,10 +60,19 @@ const Flow = () => {
   const [nodes, setNodes] = useState<Node[]>(artists);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [currentlyPlaying, setCurrentlyPlaying] = useState("");
+  const [deviceID, setDeviceID] = useState("");
 
   useEffect(() => {
     setNodes(artists);
   }, [artists]);
+
+  useEffect(() => {
+    const onLoad = async () => {
+      setDeviceID(await getDeviceID());
+    };
+
+    onLoad();
+  }, []);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -91,7 +104,14 @@ const Flow = () => {
 
   return (
     <TestContext.Provider
-      value={{ artistSet, setArtistSet, currentlyPlaying, setCurrentlyPlaying }}
+      value={{
+        artistSet,
+        setArtistSet,
+        currentlyPlaying,
+        setCurrentlyPlaying,
+        deviceID,
+        setDeviceID,
+      }}
     >
       <Player currentlyPlaying={currentlyPlaying} />
       <form

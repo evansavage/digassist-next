@@ -103,6 +103,18 @@ export const searchArtists = async (
   return artists;
 };
 
+export const getDeviceID = async () => {
+  const players = await axios.get(
+    "https://api.spotify.com/v1/me/player/devices",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  return await players.data.devices[0].id;
+};
+
 export const getRecentArtists = async (
   flow: any,
   artistSet: Set<string>,
@@ -175,52 +187,148 @@ export const recommend = async (flow: any, connection: any) => {
   console.log(data);
 };
 
-export const playArtist = async (
-  id: string,
-  context: FlowContextInterface | null
-) => {
-  const players = await axios.get(
-    "https://api.spotify.com/v1/me/player/devices",
+export const getCurrentlyPlaying = async () => {
+  const currentlyPlaying = await axios.get(
+    `https://api.spotify.com/v1/me/player/currently-playing`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
       },
     }
   );
-  const device = players.data.devices[0].id;
-  console.log(device);
+  return currentlyPlaying;
+};
 
-  await axios
-    .put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${device}`,
-      {
-        context_uri: `spotify:artist:${id}`,
+export const playArtist = async (
+  id: string,
+  context: FlowContextInterface | null
+) => {
+  await axios.put(
+    `https://api.spotify.com/v1/me/player/play?device_id=${context?.deviceID}`,
+    {
+      context_uri: `spotify:artist:${id}`,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
-        },
-      }
-    )
-    .then(() => {
-      setTimeout(async () => {
-        const currentlyPlaying = await axios.get(
-          `https://api.spotify.com/v1/me/player/currently-playing`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
-            },
-          }
+    }
+  );
+  return;
+};
+
+export const playPlayer = async (context: FlowContextInterface | null) => {
+  await axios.put(
+    `https://api.spotify.com/v1/me/player/play?device_id=${context?.deviceID}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  return;
+};
+
+export const pausePlayer = async (context: FlowContextInterface | null) => {
+  await axios.put(
+    `https://api.spotify.com/v1/me/player/pause?device_id=${context?.deviceID}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  return;
+};
+
+export const playAndUpdateCurrent = async (
+  id: string,
+  context: FlowContextInterface | null
+) => {
+  await playArtist(id, context).then(() => {
+    setTimeout(async () => {
+      const currentlyPlaying = await getCurrentlyPlaying();
+      if (currentlyPlaying.data?.item !== null) {
+        context?.setCurrentlyPlaying(
+          currentlyPlaying.data.item.name +
+            " - " +
+            currentlyPlaying.data.item.artists
+              .map((artist: any) => artist.name)
+              .join(", ")
         );
-        if (currentlyPlaying.data?.item !== null) {
-          context?.setCurrentlyPlaying(
-            currentlyPlaying.data.item.name +
-              " - " +
-              currentlyPlaying.data.item.artists
-                .map((artist: any) => artist.name)
-                .join(", ")
-          );
-        }
-      }, 2000);
-    });
+      }
+    }, 300);
+  });
+};
+
+export const skipToPrev = async (context: FlowContextInterface | null) => {
+  const skipReq = await axios.post(
+    `https://api.spotify.com/v1/me/player/previous?device_id=${context?.deviceID}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  setTimeout(async () => {
+    const currentlyPlaying = await getCurrentlyPlaying();
+    if (currentlyPlaying.data?.item !== null) {
+      context?.setCurrentlyPlaying(
+        currentlyPlaying.data.item.name +
+          " - " +
+          currentlyPlaying.data.item.artists
+            .map((artist: any) => artist.name)
+            .join(", ")
+      );
+    }
+  }, 300);
+};
+
+export const skipToNext = async (context: FlowContextInterface | null) => {
+  const skipReq = await axios.post(
+    `https://api.spotify.com/v1/me/player/next?device_id=${context?.deviceID}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  setTimeout(async () => {
+    const currentlyPlaying = await getCurrentlyPlaying();
+    if (currentlyPlaying.data?.item !== null) {
+      context?.setCurrentlyPlaying(
+        currentlyPlaying.data.item.name +
+          " - " +
+          currentlyPlaying.data.item.artists
+            .map((artist: any) => artist.name)
+            .join(", ")
+      );
+    }
+  }, 300);
+};
+
+export const getPlayerState = async (context: FlowContextInterface | null) => {
+  const playerState = await axios.get(`https://api.spotify.com/v1/me/player`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+    },
+  });
+  if (playerState.data?.item !== null) {
+    context?.setCurrentlyPlaying(
+      playerState.data.item.name +
+        " - " +
+        playerState.data.item.artists
+          .map((artist: any) => artist.name)
+          .join(", ")
+    );
+  }
+  if (playerState.data.is_playing) {
+    return true;
+  } else {
+    return false;
+  }
 };
