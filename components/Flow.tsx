@@ -148,7 +148,6 @@ const Flow = () => {
         </select>
         <button type={"submit"}>Search</button>
       </form>
-      {checkStateTime}
       <button
         onClick={async (e) => {
           const recentArtists = await getRecentArtists(
