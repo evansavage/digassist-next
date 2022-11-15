@@ -7,8 +7,10 @@ import {
   skipToNext,
   skipToPrev,
 } from "../helpers/spotify";
+import Image from "next/image";
 
 import { BsFillSkipStartFill, BsFillSkipEndFill } from "react-icons/bs";
+import { isContext } from "vm";
 
 interface PlayerButtonInterface {
   onPlayerClick: MouseEventHandler;
@@ -53,12 +55,33 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
   const [playing, setPlaying] = useState(false);
   const flowContext = useContext(TestContext);
 
+  // const detectKeyDown = async (e: any) => {
+  //   if (e.key === " ") {
+  //     console.log("bruh");
+  //     if (playing) {
+  //       setPlaying(false);
+  //       pausePlayer(flowContext);
+  //     } else {
+  //       setPlaying(true);
+  //       playPlayer(flowContext);
+  //     }
+  //   }
+  // };
+
+  const onLoad = async () => {
+    setPlaying(await getPlayerState(flowContext));
+  };
+
   useEffect(() => {
-    const onLoad = async () => {
-      setPlaying(await getPlayerState(flowContext));
-    };
     onLoad();
+    // document.addEventListener("keydown", detectKeyDown, true);
   }, []);
+
+  useEffect(() => {
+    if (flowContext?.checkStateTime) {
+      setTimeout(() => onLoad(), flowContext?.checkStateTime + 100);
+    }
+  }, [flowContext?.checkStateTime]);
 
   const handleClick = async () => {
     if (playing) {
@@ -86,6 +109,18 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
         zIndex: 10,
       }}
     >
+      {flowContext?.playerThumbnail && (
+        <Image
+          src={flowContext?.playerThumbnail}
+          width={45}
+          height={45}
+          alt={currentlyPlaying}
+          style={{
+            marginTop: -3,
+            marginRight: 10,
+          }}
+        />
+      )}
       <BsFillSkipStartFill
         size={skipSize}
         style={{ marginTop: -3, marginRight: 8, cursor: "pointer" }}

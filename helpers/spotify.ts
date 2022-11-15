@@ -259,6 +259,13 @@ export const playAndUpdateCurrent = async (
               .join(", ")
         );
       }
+      context?.setPlayerThumbnail(
+        currentlyPlaying.data.item.album.images[2].url
+      );
+      context?.setCheckStateTime(
+        currentlyPlaying.data.item.duration_ms -
+          currentlyPlaying.data.progress_ms
+      );
     }, 300);
   });
 };
@@ -282,6 +289,13 @@ export const skipToPrev = async (context: FlowContextInterface | null) => {
           currentlyPlaying.data.item.artists
             .map((artist: any) => artist.name)
             .join(", ")
+      );
+      context?.setPlayerThumbnail(
+        currentlyPlaying.data.item.album.images[2].url
+      );
+      context?.setCheckStateTime(
+        currentlyPlaying.data.item.duration_ms -
+          currentlyPlaying.data.progress_ms
       );
     }
   }, 300);
@@ -307,6 +321,13 @@ export const skipToNext = async (context: FlowContextInterface | null) => {
             .map((artist: any) => artist.name)
             .join(", ")
       );
+      context?.setPlayerThumbnail(
+        currentlyPlaying.data.item.album.images[2].url
+      );
+      context?.setCheckStateTime(
+        currentlyPlaying.data.item.duration_ms -
+          currentlyPlaying.data.progress_ms
+      );
     }
   }, 300);
 };
@@ -317,6 +338,7 @@ export const getPlayerState = async (context: FlowContextInterface | null) => {
       Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
     },
   });
+  console.log(playerState);
   if (playerState.data?.item !== null) {
     context?.setCurrentlyPlaying(
       playerState.data.item.name +
@@ -324,6 +346,10 @@ export const getPlayerState = async (context: FlowContextInterface | null) => {
         playerState.data.item.artists
           .map((artist: any) => artist.name)
           .join(", ")
+    );
+    context?.setPlayerThumbnail(playerState.data.item.album.images[2].url);
+    context?.setCheckStateTime(
+      playerState.data.item.duration_ms - playerState.data.progress_ms
     );
   }
   if (playerState.data.is_playing) {

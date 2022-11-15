@@ -39,6 +39,10 @@ export interface FlowContextInterface {
   setCurrentlyPlaying: Function;
   deviceID: string;
   setDeviceID: Function;
+  playerThumbnail: string;
+  setPlayerThumbnail: Function;
+  checkStateTime: number;
+  setCheckStateTime: Function;
 }
 
 export const TestContext = createContext<FlowContextInterface | null>(null);
@@ -61,6 +65,8 @@ const Flow = () => {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [currentlyPlaying, setCurrentlyPlaying] = useState("");
   const [deviceID, setDeviceID] = useState("");
+  const [playerThumbnail, setPlayerThumbnail] = useState("");
+  const [checkStateTime, setCheckStateTime] = useState(0);
 
   useEffect(() => {
     setNodes(artists);
@@ -111,6 +117,10 @@ const Flow = () => {
         setCurrentlyPlaying,
         deviceID,
         setDeviceID,
+        playerThumbnail,
+        setPlayerThumbnail,
+        checkStateTime,
+        setCheckStateTime,
       }}
     >
       <Player currentlyPlaying={currentlyPlaying} />
@@ -138,6 +148,7 @@ const Flow = () => {
         </select>
         <button type={"submit"}>Search</button>
       </form>
+      {checkStateTime}
       <button
         onClick={async (e) => {
           const recentArtists = await getRecentArtists(
