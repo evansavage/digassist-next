@@ -61,7 +61,7 @@ const Player = ({
 }) => {
   const [playing, setPlaying] = useState(false);
   const flowContext = useContext(TestContext);
-  const [trackVelocity, setTrackVelocity] = useState(10);
+  const [trackVelocity, setTrackVelocity] = useState(8);
 
   // const detectKeyDown = async (e: any) => {
   //   if (e.key === " ") {
@@ -160,7 +160,7 @@ const Player = ({
       <div
         style={{ marginLeft: 10, marginTop: -4, maxWidth: 287 }}
         onMouseEnter={() => setTrackVelocity(0)}
-        onMouseLeave={() => setTrackVelocity(10)}
+        onMouseLeave={() => setTrackVelocity(8)}
       >
         {currentlyPlaying.track.length > 35 ? (
           <Marquee

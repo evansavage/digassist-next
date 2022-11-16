@@ -1,8 +1,10 @@
 import axios from "axios";
+import rax from "retry-axios";
 import { resolve } from "path";
 import { convertCompilerOptionsFromJson, Set } from "typescript";
 import Flow from "../components/Flow";
 import { FlowContextInterface } from "../components/Flow";
+import { customNodeStyle } from "../components/CustomNode";
 
 export const discogsToken = "JqlUbPXscGqXqAuzphAKIsAUTPsLWNVciqXeiPsF";
 
@@ -53,6 +55,7 @@ export const searchArtists = async (
           id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
+          style: customNodeStyle,
           data: {
             label: data.name,
             ...data,
@@ -70,6 +73,7 @@ export const searchArtists = async (
           id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
+          style: customNodeStyle,
           data: {
             label: data.name,
             ...data,
@@ -87,6 +91,7 @@ export const searchArtists = async (
           id: data.id,
           position: { x: 0, y: index * 50 },
           type: "CustomNode",
+          style: customNodeStyle,
           data: {
             label: data.name,
             ...data,
@@ -160,6 +165,58 @@ export const getRecentArtists = async (
           y: index * 50,
         },
         type: "CustomNode",
+        style: customNodeStyle,
+        data: {
+          label: obj.data.name,
+          ...obj.data,
+          nodeID: obj.data.id,
+        },
+      });
+    });
+  });
+  return resultsArr;
+};
+
+export const recommendArtists = async (
+  seeds: string[],
+  artistSet: Set<string>,
+  parentID: string
+) => {
+  var artists: any[] = [];
+  var resultsArr: any[] = [];
+  const { data } = await axios.get(
+    "https://api.spotify.com/v1/recommendations" +
+      `?seed_artists=${seeds.join(",")}&limit=5`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+      },
+    }
+  );
+  data.tracks.forEach((track: any, index: number) => {
+    if (!artistSet.has(track.artists[0].id)) {
+      artistSet.add(track.artists[0].id);
+      artists.push(
+        axios.get("https://api.spotify.com/v1/artists/" + track.artists[0].id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+          },
+        })
+      );
+    }
+  });
+  await Promise.all(artists).then((res) => {
+    res.forEach((obj, index) => {
+      resultsArr.push({
+        id: obj.data.id,
+        position: {
+          x: 0,
+          y: 300,
+        },
+        type: "CustomNode",
+        parentNode: parentID,
+        extent: "parent",
+        style: customNodeStyle,
         data: {
           label: obj.data.name,
           ...obj.data,
@@ -203,7 +260,7 @@ export const playArtist = async (
   id: string,
   context: FlowContextInterface | null
 ) => {
-  await axios.put(
+  const response = await axios.put(
     `https://api.spotify.com/v1/me/player/play?device_id=${context?.deviceID}`,
     {
       context_uri: `spotify:artist:${id}`,
@@ -214,7 +271,7 @@ export const playArtist = async (
       },
     }
   );
-  return;
+  return response;
 };
 
 export const playPlayer = async (context: FlowContextInterface | null) => {
@@ -247,9 +304,28 @@ export const playAndUpdateCurrent = async (
   id: string,
   context: FlowContextInterface | null
 ) => {
-  await playArtist(id, context).then(() => {
-    setTimeout(async () => {
-      const currentlyPlaying = await getCurrentlyPlaying();
+  await playArtist(id, context);
+  setTimeout(async () => {
+    try {
+      const myConfig = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("spotifyToken")}`,
+        },
+        raxConfig: {
+          retry: 5,
+          noResponseRetries: 5,
+          onRetryAttempt: (err: any) => {
+            const cfg = rax.getConfig(err);
+            console.log(`Retry attemp #${cfg?.currentRetryAttempt}`);
+          },
+        },
+        timeout: 300,
+      };
+      const currentlyPlaying = await axios.get(
+        `https://api.spotify.com/v1/me/player/currently-playing`,
+        myConfig
+      );
+      console.log(currentlyPlaying.data);
       if (currentlyPlaying.data?.item !== null) {
         context?.setCurrentlyPlaying({
           track: currentlyPlaying.data.item.name,
@@ -263,8 +339,10 @@ export const playAndUpdateCurrent = async (
         currentlyPlaying.data.item.duration_ms -
           currentlyPlaying.data.progress_ms
       );
-    }, 300);
-  });
+    } catch (error) {
+      console.log(error);
+    }
+  }, 300);
 };
 
 export const skipToPrev = async (context: FlowContextInterface | null) => {

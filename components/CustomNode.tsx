@@ -2,10 +2,20 @@ import Image from "next/image";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Handle, Position } from "reactflow";
 import axios from "axios";
+
 import { ReactFlowProvider, useReactFlow } from "reactflow";
 import { TestContext, FlowContextInterface } from "./Flow";
 import { playAndUpdateCurrent } from "../helpers/spotify";
 // import { playArtist } from "../helpers/spotify";
+
+export const customNodeStyle = {
+  padding: 20,
+  border: "1px solid black",
+  borderRadius: 20,
+  backgroundColor: "white",
+  maxWidth: 300,
+  transition: "background-color 0.2s ease-in-out, opacity 0.2s ease-in-out",
+};
 
 const handleStyle = { left: 20 };
 
@@ -96,15 +106,7 @@ function CustomNode({ data }: any) {
   return (
     <>
       <Handle type="target" position={Position.Top} />
-      <div
-        style={{
-          padding: 20,
-          border: "1px solid black",
-          borderRadius: 20,
-          backgroundColor: "white",
-          maxWidth: 300,
-        }}
-      >
+      <div>
         <Image
           src={
             data?.images[0]
