@@ -177,19 +177,55 @@ const Player = ({
         ) : (
           <div>{currentlyPlaying.track}</div>
         )}
-
-        <div style={{ fontSize: 14 }}>
-          {currentlyPlaying.artists.map((artist: any, index) => {
-            return (
-              <>
-                <span key={index} style={{ cursor: "pointer" }}>
-                  {artist.name}
-                </span>
-                {index < currentlyPlaying.artists.length - 1 && ", "}
-              </>
-            );
-          })}
-        </div>
+        {currentlyPlaying.artists.map((artist: any) => artist.name).join(", ")
+          .length > 35 ? (
+          <Marquee
+            velocity={trackVelocity}
+            direction="rtl"
+            scatterRandomly={false}
+            resetAfterTries={100}
+            onInit={() => {}}
+            onFinish={() => {}}
+          >
+            <div style={{ marginRight: 20, fontSize: 14 }}>
+              {currentlyPlaying.artists.map((artist: any, index) => {
+                return (
+                  <>
+                    <span key={index} style={{ cursor: "pointer" }}>
+                      {artist.name}
+                    </span>
+                    {index < currentlyPlaying.artists.length - 1 && ", "}
+                  </>
+                );
+              })}
+            </div>
+            <div style={{ marginRight: 20, fontSize: 14 }}>
+              {currentlyPlaying.artists.map((artist: any, index) => {
+                return (
+                  <>
+                    <span key={index} style={{ cursor: "pointer" }}>
+                      {artist.name}
+                    </span>
+                    {index < currentlyPlaying.artists.length - 1 && ", "}
+                  </>
+                );
+              })}
+            </div>
+          </Marquee>
+        ) : (
+          <div style={{ fontSize: 14 }}>
+            {currentlyPlaying.artists.map((artist: any, index) => {
+              return (
+                <>
+                  <span key={index} style={{ cursor: "pointer" }}>
+                    {artist.name}
+                  </span>
+                  {index < currentlyPlaying.artists.length - 1 && ", "}
+                </>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
