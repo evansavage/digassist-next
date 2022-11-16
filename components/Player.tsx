@@ -1,5 +1,5 @@
 import { MouseEventHandler, useEffect, useState, useContext } from "react";
-import { TestContext } from "./Flow";
+import { CurrentlyPlayingInterface, TestContext } from "./Flow";
 import {
   getPlayerState,
   pausePlayer,
@@ -8,9 +8,11 @@ import {
   skipToPrev,
 } from "../helpers/spotify";
 import Image from "next/image";
+import Marquee from "react-marquee-slider";
 
 import { BsFillSkipStartFill, BsFillSkipEndFill } from "react-icons/bs";
 import { isContext } from "vm";
+import { arrToStr } from "../helpers/general";
 
 interface PlayerButtonInterface {
   onPlayerClick: MouseEventHandler;
@@ -50,10 +52,16 @@ const Play = ({ onPlayerClick }: PlayerButtonInterface) => {
 };
 
 const skipSize = 24;
+const expSkipWidth = 184;
 
-const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
+const Player = ({
+  currentlyPlaying,
+}: {
+  currentlyPlaying: CurrentlyPlayingInterface;
+}) => {
   const [playing, setPlaying] = useState(false);
   const flowContext = useContext(TestContext);
+  const [trackVelocity, setTrackVelocity] = useState(10);
 
   // const detectKeyDown = async (e: any) => {
   //   if (e.key === " ") {
@@ -107,6 +115,8 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
         borderBottom: "none",
         borderRadius: "10px 10px 0 0",
         zIndex: 10,
+        maxWidth: 450,
+        minWidth: 450,
       }}
     >
       {flowContext?.playerThumbnail && (
@@ -114,7 +124,7 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
           src={flowContext?.playerThumbnail}
           width={45}
           height={45}
-          alt={currentlyPlaying}
+          alt={currentlyPlaying.track}
           style={{
             marginTop: -3,
             marginRight: 10,
@@ -123,7 +133,12 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
       )}
       <BsFillSkipStartFill
         size={skipSize}
-        style={{ marginTop: -3, marginRight: 8, cursor: "pointer" }}
+        style={{
+          marginTop: -3,
+          marginRight: 8,
+          cursor: "pointer",
+          // width: expSkipWidth,
+        }}
         onClick={async () => skipToPrev(flowContext)}
       />
       <div>
@@ -135,10 +150,47 @@ const Player = ({ currentlyPlaying }: { currentlyPlaying: string }) => {
       </div>
       <BsFillSkipEndFill
         size={skipSize}
-        style={{ marginTop: -3, cursor: "pointer" }}
+        style={{
+          marginTop: -3,
+          cursor: "pointer",
+          // width: expSkipWidth
+        }}
         onClick={async () => skipToNext(flowContext)}
       />
-      <div style={{ marginTop: -4, marginLeft: 10 }}>{currentlyPlaying}</div>
+      <div
+        style={{ marginLeft: 10, marginTop: -4, maxWidth: 287 }}
+        onMouseEnter={() => setTrackVelocity(0)}
+        onMouseLeave={() => setTrackVelocity(10)}
+      >
+        {currentlyPlaying.track.length > 35 ? (
+          <Marquee
+            velocity={trackVelocity}
+            direction="rtl"
+            scatterRandomly={false}
+            resetAfterTries={100}
+            onInit={() => {}}
+            onFinish={() => {}}
+          >
+            <div style={{ marginRight: 20 }}>{currentlyPlaying.track}</div>
+            <div style={{ marginRight: 20 }}>{currentlyPlaying.track}</div>
+          </Marquee>
+        ) : (
+          <div>{currentlyPlaying.track}</div>
+        )}
+
+        <div style={{ fontSize: 14 }}>
+          {currentlyPlaying.artists.map((artist: any, index) => {
+            return (
+              <>
+                <span key={index} style={{ cursor: "pointer" }}>
+                  {artist.name}
+                </span>
+                {index < currentlyPlaying.artists.length - 1 && ", "}
+              </>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

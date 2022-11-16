@@ -251,13 +251,10 @@ export const playAndUpdateCurrent = async (
     setTimeout(async () => {
       const currentlyPlaying = await getCurrentlyPlaying();
       if (currentlyPlaying.data?.item !== null) {
-        context?.setCurrentlyPlaying(
-          currentlyPlaying.data.item.name +
-            " - " +
-            currentlyPlaying.data.item.artists
-              .map((artist: any) => artist.name)
-              .join(", ")
-        );
+        context?.setCurrentlyPlaying({
+          track: currentlyPlaying.data.item.name,
+          artists: currentlyPlaying.data.item.artists,
+        });
       }
       context?.setPlayerThumbnail(
         currentlyPlaying.data.item.album.images[2].url
@@ -283,13 +280,10 @@ export const skipToPrev = async (context: FlowContextInterface | null) => {
   setTimeout(async () => {
     const currentlyPlaying = await getCurrentlyPlaying();
     if (currentlyPlaying.data?.item !== null) {
-      context?.setCurrentlyPlaying(
-        currentlyPlaying.data.item.name +
-          " - " +
-          currentlyPlaying.data.item.artists
-            .map((artist: any) => artist.name)
-            .join(", ")
-      );
+      context?.setCurrentlyPlaying({
+        track: currentlyPlaying.data.item.name,
+        artists: currentlyPlaying.data.item.artists,
+      });
       context?.setPlayerThumbnail(
         currentlyPlaying.data.item.album.images[2].url
       );
@@ -314,13 +308,10 @@ export const skipToNext = async (context: FlowContextInterface | null) => {
   setTimeout(async () => {
     const currentlyPlaying = await getCurrentlyPlaying();
     if (currentlyPlaying.data?.item !== null) {
-      context?.setCurrentlyPlaying(
-        currentlyPlaying.data.item.name +
-          " - " +
-          currentlyPlaying.data.item.artists
-            .map((artist: any) => artist.name)
-            .join(", ")
-      );
+      context?.setCurrentlyPlaying({
+        track: currentlyPlaying.data.item.name,
+        artists: currentlyPlaying.data.item.artists,
+      });
       context?.setPlayerThumbnail(
         currentlyPlaying.data.item.album.images[2].url
       );
@@ -340,13 +331,10 @@ export const getPlayerState = async (context: FlowContextInterface | null) => {
   });
   console.log(playerState);
   if (playerState.data?.item !== null) {
-    context?.setCurrentlyPlaying(
-      playerState.data.item.name +
-        " - " +
-        playerState.data.item.artists
-          .map((artist: any) => artist.name)
-          .join(", ")
-    );
+    context?.setCurrentlyPlaying({
+      track: playerState.data.item.name,
+      artists: playerState.data.item.artists,
+    });
     context?.setPlayerThumbnail(playerState.data.item.album.images[2].url);
     context?.setCheckStateTime(
       playerState.data.item.duration_ms - playerState.data.progress_ms

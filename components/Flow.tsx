@@ -32,10 +32,15 @@ import {
   getDeviceID,
 } from "../helpers/spotify";
 
+export interface CurrentlyPlayingInterface {
+  track: string;
+  artists: object[];
+}
+
 export interface FlowContextInterface {
   artistSet: Set<string>;
   setArtistSet: Function;
-  currentlyPlaying: string;
+  currentlyPlaying: CurrentlyPlayingInterface;
   setCurrentlyPlaying: Function;
   deviceID: string;
   setDeviceID: Function;
@@ -63,7 +68,10 @@ const Flow = () => {
   const [queryType, setQueryType] = useState("artist");
   const [nodes, setNodes] = useState<Node[]>(artists);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
-  const [currentlyPlaying, setCurrentlyPlaying] = useState("");
+  const [currentlyPlaying, setCurrentlyPlaying] = useState({
+    track: "",
+    artists: [],
+  });
   const [deviceID, setDeviceID] = useState("");
   const [playerThumbnail, setPlayerThumbnail] = useState("");
   const [checkStateTime, setCheckStateTime] = useState(0);
